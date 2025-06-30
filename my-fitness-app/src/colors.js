@@ -2,15 +2,15 @@
 // מרכז הצבעים של האפליקציה
 
 const colors = {
-  primary: "#1976d2",      // כחול ראשי
-  secondary: "#ff9800",    // כתום משני
-  background: "#f5f5f5",   // רקע כללי
-  surface: "#fff",         // רקע כרטיסים/קופסאות
-  text: "#222",            // טקסט כהה
-  textLight: "#fff",       // טקסט בהיר
-  error: "#d32f2f",        // אדום שגיאה
-  success: "#388e3c",      // ירוק הצלחה
-  border: "#e0e0e0"        // גבול עדין
+  primary: "#ff9800",      // כתום זוהר
+  secondary: "#fff200",    // צהוב ניאון
+  background: "#0a0a0a",   // שחור עמוק
+  surface: "#181818",      // אפור כהה לכרטיסים
+  text: "#fff",            // טקסט לבן
+  textLight: "#fffbe6",    // טקסט לבן-צהבהב
+  error: "#ff1744",        // אדום ניאון
+  success: "#00e676",      // ירוק ניאון
+  border: "#ff9800"        // גבול כתום
 };
 
 export default colors;
