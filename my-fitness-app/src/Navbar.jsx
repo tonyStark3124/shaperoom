@@ -262,7 +262,7 @@ export default function Navbar({ lang, setLang }) {
       </div>
       {/* שמאל: שפה, שם, לוגו */}
       <div style={{ gridArea: "logoLang", display: "flex", alignItems: "center", gap: 8, minWidth: 0, flexDirection: "row-reverse", overflow: "visible" }}>
-        <img src="/vite.svg" alt="logo" style={{ height: 38, marginLeft: 8, marginRight: 0 }} />
+        <img src="/fitness-favicon.svg" alt="logo" style={{ height: 38, marginLeft: 8, marginRight: 0 }} />
         {!isMobile && (
           <span className="app-title" style={{ fontWeight: 900, fontSize: 22, color: colors.primary, letterSpacing: 1, whiteSpace: "nowrap" }}>ShapeRoom</span>
         )}
