@@ -25,7 +25,7 @@ export default function App() {
     return () => { unsub.then(u => u && u()); };
   }, []);
   // אם לא מחובר או ראוטר לא קיים -> הפניה ללוגין
-  if (isAuth === false && location.pathname !== "/") {
+  if (isAuth === false && !["/", "/signup", "/reset"].includes(location.pathname)) {
     return <Navigate to="/" replace />;
   }
   return (
