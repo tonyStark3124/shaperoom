@@ -1,35 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import CreateWorkout from "./pages/CreateWorkout";
+import RunWorkout from "./pages/RunWorkout";
+import ResetPassword from "./pages/ResetPassword";
+import colors from "./colors";
+import Navbar from "./Navbar";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
+  const [lang, setLang] = useState(() => localStorage.getItem("lang") || "he");
+  useEffect(() => {
+    localStorage.setItem("lang", lang);
+    document.body.dir = lang === "he" ? "rtl" : "ltr";
+  }, [lang]);
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar lang={lang} setLang={setLang} />
+      <Routes>
+        <Route path="/" element={<Login lang={lang} />} />
+        <Route path="/signup" element={<Signup lang={lang} />} />
+        <Route path="/create" element={<CreateWorkout lang={lang} />} />
+        <Route path="/run" element={<RunWorkout lang={lang} />} />
+        <Route path="/reset" element={<ResetPassword lang={lang} />} />
+      </Routes>
     </>
-  )
+  );
 }
-
-export default App
