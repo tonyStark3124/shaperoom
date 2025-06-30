@@ -1,0 +1,147 @@
+.notfound-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+  color: #222;
+  text-align: center;
+  animation: fadeIn 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+.notfound-animation {
+  position: relative;
+  width: 180px;
+  height: 120px;
+  margin-bottom: 2rem;
+}
+
+.dumbbell {
+  position: absolute;
+  left: 0;
+  top: 60px;
+  width: 180px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  animation: dumbbell-lift 2s infinite cubic-bezier(.4,0,.2,1);
+}
+.dumbbell .bar {
+  width: 120px;
+  height: 8px;
+  background: #6366f1;
+  border-radius: 4px;
+  margin: 0 8px;
+}
+.dumbbell .weight {
+  width: 24px;
+  height: 24px;
+  background: #0ea5e9;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px #0ea5e955;
+}
+.dumbbell .weight.left {
+  margin-right: 8px;
+}
+.dumbbell .weight.right {
+  margin-left: 8px;
+}
+
+.jumping-athlete {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 80px;
+  animation: athlete-jump 2s infinite cubic-bezier(.4,0,.2,1);
+}
+.jumping-athlete .head {
+  width: 18px;
+  height: 18px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  left: 21px;
+  top: 0;
+  box-shadow: 0 2px 8px #fbbf2455;
+}
+.jumping-athlete .body {
+  width: 10px;
+  height: 32px;
+  background: #6366f1;
+  border-radius: 6px;
+  position: absolute;
+  left: 25px;
+  top: 18px;
+}
+.jumping-athlete .arm {
+  width: 28px;
+  height: 8px;
+  background: #0ea5e9;
+  border-radius: 8px;
+  position: absolute;
+  top: 24px;
+}
+.jumping-athlete .arm.left {
+  left: -8px;
+  transform: rotate(-25deg);
+}
+.jumping-athlete .arm.right {
+  left: 30px;
+  transform: rotate(25deg);
+}
+.jumping-athlete .leg {
+  width: 10px;
+  height: 28px;
+  background: #0ea5e9;
+  border-radius: 8px;
+  position: absolute;
+  top: 48px;
+}
+.jumping-athlete .leg.left {
+  left: 18px;
+  transform: rotate(-15deg);
+}
+.jumping-athlete .leg.right {
+  left: 32px;
+  transform: rotate(15deg);
+}
+
+@keyframes dumbbell-lift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+@keyframes athlete-jump {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-40px) scale(1.08); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.notfound-btn {
+  margin-top: 2rem;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  background: linear-gradient(90deg, #6366f1 60%, #0ea5e9 100%);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  box-shadow: 0 2px 12px #6366f155;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  outline: none;
+}
+.notfound-btn:hover, .notfound-btn:focus {
+  background: linear-gradient(90deg, #0ea5e9 60%, #6366f1 100%);
+  transform: scale(1.04);
+}
+
+@media (max-width: 600px) {
+  .notfound-animation { width: 120px; height: 80px; }
+  .jumping-athlete { width: 40px; height: 54px; }
+  .dumbbell { width: 120px; height: 16px; }
+}
