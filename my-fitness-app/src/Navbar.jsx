@@ -9,6 +9,18 @@ export default function Navbar({ lang, setLang }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Responsive state for hiding app name
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
+  const [isNavMobile, setIsNavMobile] = useState(window.innerWidth <= 700);
+  useEffect(() => {
+    const onResize = () => {
+      setIsMobile(window.innerWidth <= 500);
+      setIsNavMobile(window.innerWidth <= 700);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(setUser);
     return unsub;
@@ -23,31 +35,157 @@ export default function Navbar({ lang, setLang }) {
     { path: "/create", label: lang === "he" ? "צור אימון" : "Create Workout", icon: "➕" }
   ];
 
+  // הגדרת סדר עמודות קבועה: ימין (המבורגר, תמונה, שם) | מרכז | שמאל (שפה, שם, לוגו)
+  const gridTemplate = 'hamburgerUser center logoLang';
+
+  // Helper: קיצור שם משתמש במסך קטן
+  function getShortEmail(email) {
+    if (!email) return "";
+    if (!isMobile) return email;
+    if (email.length <= 5) return email;
+    return email.slice(0, 5) + (email.length > 5 ? "..." : "");
+  }
+
   return (
     <nav style={{
       width: "100%",
+      maxWidth: "100vw",
       background: colors.surface,
       borderBottom: `2px solid ${colors.primary}22`,
       boxShadow: "0 2px 8px 0 #0001",
-      display: "flex",
+      display: "grid",
+      gridTemplateColumns: "auto 1fr auto",
+      gridTemplateAreas: `'${gridTemplate}'`,
       alignItems: "center",
-      justifyContent: "center",
-      padding: "0 18px",
+      justifyItems: "center",
+      padding: "0 8px",
       minHeight: 60,
       position: "sticky",
       top: 0,
       left: 0,
       right: 0,
       zIndex: 10,
-      overflowX: "hidden"
+      overflow: "visible",
+      direction: "ltr"
     }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, justifyContent: "flex-start" }}>
-        <img src="/vite.svg" alt="logo" style={{ height: 38, marginLeft: 8 }} />
-        <span className="app-title" style={{ fontWeight: 900, fontSize: 22, color: colors.primary, letterSpacing: 1, display: window.innerWidth <= 500 ? "none" : "inline" }}>ShapeRoom</span>
+      {/* ימין: המבורגר, תמונה, שם */}
+      <div style={{ gridArea: "hamburgerUser", display: "flex", alignItems: "center", gap: 8, minWidth: 0, flexDirection: "row", overflow: "visible" }}>
+        {isNavMobile && (
+          <button
+            className="hamburger"
+            aria-label="menu"
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: 30,
+              color: colors.primary,
+              cursor: "pointer",
+              zIndex: 201
+            }}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            {menuOpen ? "✖️" : "☰"}
+          </button>
+        )}
+        {/* מגש צדדי מקצועי */}
+        {isNavMobile && menuOpen && (
+          <>
+            <div
+              onClick={() => setMenuOpen(false)}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.45)",
+                zIndex: 200,
+                transition: "background 0.2s"
+              }}
+            />
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                height: "100vh",
+                width: 260,
+                background: `linear-gradient(120deg, ${colors.primary} 60%, ${colors.secondary} 100%)`,
+                boxShadow: "2px 0 24px #0005",
+                zIndex: 201,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                padding: "32px 0 0 0",
+                animation: "slideInMenu 0.22s cubic-bezier(.7,1.7,.5,1)"
+              }}
+            >
+              <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                {navItems.map((item) => (
+                  <button
+                    key={item.path}
+                    onClick={() => { setMenuOpen(false); navigate(item.path); }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: location.pathname === item.path ? colors.textLight : colors.textLight + "cc",
+                      fontWeight: location.pathname === item.path ? 800 : 600,
+                      fontSize: 20,
+                      cursor: "pointer",
+                      padding: "18px 32px 18px 0",
+                      width: "100%",
+                      textAlign: "left",
+                      borderLeft: location.pathname === item.path ? `5px solid ${colors.surface}` : "5px solid transparent",
+                      transition: "color 0.18s, border 0.18s, background 0.18s",
+                      letterSpacing: 1
+                    }}
+                  >
+                    <span style={{ fontSize: 24, marginLeft: 10 }}>{item.icon}</span>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <style>{`
+              @keyframes slideInMenu {
+                from { transform: translateX(-100%); opacity: 0.2; }
+                to { transform: translateX(0); opacity: 1; }
+              }
+            `}</style>
+          </>
+        )}
+        {user ? (
+          <>
+            <img
+              src={user.photoURL || "https://ui-avatars.com/api/?name=" + (user.displayName || user.email)}
+              alt="user"
+              style={{ width: 40, height: 40, borderRadius: "50%", border: `2px solid ${colors.primary}55`, objectFit: "cover" }}
+            />
+            <span
+              style={{
+                fontSize: 15,
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+                color: colors.text,
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                maxWidth: isMobile ? 50 : 80,
+                direction: "ltr",
+                display: "inline-block",
+                verticalAlign: "middle"
+              }}
+              title={user.email}
+            >
+              {getShortEmail(user.email)}
+            </span>
+          </>
+        ) : (
+          <img src="/vite.svg" alt="user" style={{ width: 40, height: 40, opacity: 0.3 }} />
+        )}
       </div>
-      {/* תפריט ניווט רגיל למסך רחב */}
-      <div className="nav-center" style={{ display: "flex", gap: 18, flex: 2, justifyContent: "center", position: "relative" }}>
-        <div className="nav-items" style={{ display: window.innerWidth > 700 ? "flex" : "none", gap: 18 }}>
+      {/* מרכז ניווט */}
+      <div className="nav-center" style={{ gridArea: "center", display: "flex", gap: 18, justifyContent: "center", alignItems: "center", minWidth: 0, position: "relative", overflow: "visible" }}>
+        <div className="nav-items" style={{ display: !isNavMobile ? "flex" : "none", gap: 18 }}>
           {navItems.map((item) => (
             <button
               key={item.path}
@@ -69,28 +207,7 @@ export default function Navbar({ lang, setLang }) {
             </button>
           ))}
         </div>
-        {/* המבורגר */}
-        <button
-          className="hamburger"
-          aria-label="menu"
-          style={{
-            display: window.innerWidth <= 700 ? "block" : "none",
-            background: "none",
-            border: "none",
-            fontSize: 30,
-            color: colors.primary,
-            cursor: "pointer",
-            marginRight: lang === "he" ? 0 : 10,
-            marginLeft: lang === "he" ? 10 : 0,
-            position: "absolute",
-            top: 0,
-            [lang === "he" ? "right" : "left"]: 0
-          }}
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          {menuOpen ? "✖️" : "☰"}
-        </button>
-        {menuOpen && (
+        {isNavMobile && menuOpen && (
           <div
             style={{
               position: "absolute",
@@ -133,11 +250,9 @@ export default function Navbar({ lang, setLang }) {
         <style>{`
           @media (max-width: 700px) {
             .nav-items { display: none !important; }
-            .hamburger { display: block !important; }
           }
           @media (min-width: 701px) {
             .nav-items { display: flex !important; }
-            .hamburger { display: none !important; }
           }
           @keyframes fadeInMenu {
             from { opacity: 0; transform: translateY(-10px); }
@@ -145,7 +260,12 @@ export default function Navbar({ lang, setLang }) {
           }
         `}</style>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, justifyContent: "flex-end", minWidth: 120, overflow: "hidden", maxWidth: 180 }}>
+      {/* שמאל: שפה, שם, לוגו */}
+      <div style={{ gridArea: "logoLang", display: "flex", alignItems: "center", gap: 8, minWidth: 0, flexDirection: "row-reverse", overflow: "visible" }}>
+        <img src="/vite.svg" alt="logo" style={{ height: 38, marginLeft: 8, marginRight: 0 }} />
+        {!isMobile && (
+          <span className="app-title" style={{ fontWeight: 900, fontSize: 22, color: colors.primary, letterSpacing: 1, whiteSpace: "nowrap" }}>ShapeRoom</span>
+        )}
         <button
           onClick={() => setLang(lang === "he" ? "en" : "he")}
           style={{
@@ -156,40 +276,11 @@ export default function Navbar({ lang, setLang }) {
             fontWeight: 700,
             fontSize: 15,
             padding: "6px 14px",
-            cursor: "pointer",
-            marginLeft: 8
+            cursor: "pointer"
           }}
         >
           {lang === "he" ? "English" : "עברית"}
         </button>
-        {user ? (
-          <>
-            <img
-              src={user.photoURL || "https://ui-avatars.com/api/?name=" + (user.displayName || user.email)}
-              alt="user"
-              style={{ width: 40, height: 40, borderRadius: "50%", border: `2px solid ${colors.primary}55`, objectFit: "cover", marginLeft: 8 }}
-            />
-            <span
-              style={{
-                fontSize: 15,
-                fontWeight: 600,
-                whiteSpace: "nowrap",
-                color: colors.text,
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                maxWidth: 80,
-                direction: "ltr",
-                display: "inline-block",
-                verticalAlign: "middle"
-              }}
-              title={user.email}
-            >
-              {user.email.length > 16 ? user.email.slice(0, 13) + "..." : user.email}
-            </span>
-          </>
-        ) : (
-          <img src="/vite.svg" alt="user" style={{ width: 40, height: 40, opacity: 0.3, marginLeft: 8 }} />
-        )}
       </div>
     </nav>
   );
