@@ -1,7 +1,7 @@
 // src/pages/RunWorkout.jsx
 import { useEffect, useState, useRef } from "react";
 import { db, auth } from "../firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import colors from "../colors";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,8 @@ export default function RunWorkout({ lang = "he" }) {
   const [loadingUser, setLoadingUser] = useState(true);
   const [showDone, setShowDone] = useState(false);
   const [toast, setToast] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteName, setDeleteName] = useState("");
   const navigate = useNavigate();
 
   const t = {
@@ -187,6 +189,22 @@ export default function RunWorkout({ lang = "he" }) {
     }
   };
 
+  // מחיקת אימון מה-DB
+  const handleDeleteWorkout = async (id) => {
+    if (!auth.currentUser) return;
+    try {
+      await deleteDoc(doc(db, "users", auth.currentUser.uid, "workouts", id));
+      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+      setDeleteId(null);
+      setDeleteName("");
+      setToast(lang === "he" ? "האימון נמחק" : "Workout deleted");
+      setTimeout(() => setToast(""), 1800);
+    } catch (err) {
+      setToast((lang === "he" ? "שגיאה במחיקה: " : "Delete error: ") + err.message);
+      setTimeout(() => setToast(""), 2500);
+    }
+  };
+
   if (loadingUser) return <p>{tr.loading}</p>;
   if (!auth.currentUser) {
     return <p>{tr.login}</p>;
@@ -225,6 +243,55 @@ export default function RunWorkout({ lang = "he" }) {
             {toast}
           </div>
         )}
+        {/* דיאלוג מחיקה */}
+        {deleteId && (
+          <>
+            <div
+              onClick={() => { setDeleteId(null); setDeleteName(""); }}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                background: "rgba(0,0,0,0.35)",
+                zIndex: 1001
+              }}
+            />
+            <div style={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%,-50%)",
+              background: colors.surface,
+              borderRadius: 16,
+              boxShadow: "0 4px 32px #0005",
+              zIndex: 1002,
+              padding: 32,
+              minWidth: 260,
+              textAlign: "center"
+            }}>
+              <div style={{ fontSize: 38, color: colors.error, marginBottom: 10 }}>🗑️</div>
+              <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 18 }}>
+                {lang === "he" ? `האם למחוק את האימון "${deleteName}"?` : `Delete workout "${deleteName}"?`}
+              </div>
+              <div style={{ display: "flex", gap: 18, justifyContent: "center" }}>
+                <button
+                  onClick={() => handleDeleteWorkout(deleteId)}
+                  style={{ background: colors.error, color: colors.textLight, border: "none", borderRadius: 8, padding: "8px 22px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}
+                >
+                  {lang === "he" ? "כן" : "Yes"}
+                </button>
+                <button
+                  onClick={() => { setDeleteId(null); setDeleteName(""); }}
+                  style={{ background: colors.background, color: colors.text, border: `1.5px solid ${colors.primary}55`, borderRadius: 8, padding: "8px 22px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}
+                >
+                  {lang === "he" ? "לא" : "No"}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
         <h2 style={{ color: colors.primary, textAlign: "center", marginBottom: 18, fontSize: 28, letterSpacing: 1 }}>{tr.choose}</h2>
         <button
           onClick={() => navigate("/create")}
@@ -259,31 +326,58 @@ export default function RunWorkout({ lang = "he" }) {
             marginTop: 10
           }}>
             {workouts.map((w, i) => (
-              <button
-                key={w.id}
-                onClick={() => startWorkout(w)}
-                style={{
-                  background: `linear-gradient(120deg, ${colors.primary}11 60%, ${colors.secondary}22 100%)`,
-                  border: `2px solid ${colors.primary}33`,
-                  borderRadius: 12,
-                  padding: "22px 10px 18px 10px",
-                  fontSize: 18,
-                  fontWeight: 600,
-                  color: colors.text,
-                  boxShadow: "0 2px 8px 0 #0001",
-                  cursor: "pointer",
-                  transition: "transform 0.18s, box-shadow 0.18s, border 0.18s",
-                  outline: "none",
-                  position: "relative",
-                  overflow: "hidden",
-                  animation: `fadeInUp 0.5s ${i * 0.08}s both` // אנימציה stagger
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
-                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-              >
-                <span style={{ fontSize: 26, display: "block", marginBottom: 6 }}>{w.exercises[0]?.icon || "🏋️‍♂️"}</span>
-                {w.name}
-              </button>
+              <div key={w.id} style={{ position: "relative" }}>
+                <button
+                  onClick={() => { setDeleteId(w.id); setDeleteName(w.name); }}
+                  style={{
+                    position: "absolute",
+                    top: 6,
+                    left: 6,
+                    background: colors.surface,
+                    border: `2px solid ${colors.error}55`,
+                    color: colors.error,
+                    borderRadius: "50%",
+                    width: 34,
+                    height: 34,
+                    fontSize: 20,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 2px 8px #0002",
+                    cursor: "pointer",
+                    zIndex: 2,
+                    transition: "background 0.15s, border 0.15s"
+                  }}
+                  title={lang === "he" ? "מחק אימון" : "Delete workout"}
+                >
+                  🗑️
+                </button>
+                <button
+                  onClick={() => startWorkout(w)}
+                  style={{
+                    background: `linear-gradient(120deg, ${colors.primary}11 60%, ${colors.secondary}22 100%)`,
+                    border: `2px solid ${colors.primary}33`,
+                    borderRadius: 12,
+                    padding: "22px 10px 18px 10px",
+                    fontSize: 18,
+                    fontWeight: 600,
+                    color: colors.text,
+                    boxShadow: "0 2px 8px 0 #0001",
+                    cursor: "pointer",
+                    transition: "transform 0.18s, box-shadow 0.18s, border 0.18s",
+                    outline: "none",
+                    position: "relative",
+                    overflow: "hidden",
+                    animation: `fadeInUp 0.5s ${i * 0.08}s both`,
+                    width: "100%"
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                >
+                  <span style={{ fontSize: 26, display: "block", marginBottom: 6 }}>{w.exercises[0]?.icon || "🏋️‍♂️"}</span>
+                  {w.name}
+                </button>
+              </div>
             ))}
           </div>
         )}
