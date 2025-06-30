@@ -121,163 +121,165 @@ export default function Login({ lang = "he" }) {
   };
 
   return (
-    <form onSubmit={handleLogin} style={{
-      maxWidth: 350,
-      margin: "60px auto",
-      padding: 32,
-      background: colors.surface,
-      borderRadius: 12,
-      boxShadow: "0 2px 12px 0 #0002",
-      display: "flex",
-      flexDirection: "column",
-      gap: 16,
-      border: `1px solid ${colors.border}`
-    }}>
-      <button type="button" onClick={handleSwitchLang} style={{ alignSelf: "flex-end", background: "none", border: "none", color: colors.secondary, fontWeight: 700, cursor: "pointer", fontSize: 15 }}>{tr.switchLang}</button>
-      <h2 style={{ color: colors.primary, textAlign: "center", marginBottom: 12 }}>{tr.title}</h2>
-      {lastUser && (
+    <div className="page-container">
+      <form onSubmit={handleLogin} style={{
+        maxWidth: 350,
+        margin: "60px auto",
+        padding: 32,
+        background: colors.surface,
+        borderRadius: 12,
+        boxShadow: "0 2px 12px 0 #0002",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        border: `1px solid ${colors.border}`
+      }}>
+        <button type="button" onClick={handleSwitchLang} style={{ alignSelf: "flex-end", background: "none", border: "none", color: colors.secondary, fontWeight: 700, cursor: "pointer", fontSize: 15 }}>{tr.switchLang}</button>
+        <h2 style={{ color: colors.primary, textAlign: "center", marginBottom: 12 }}>{tr.title}</h2>
+        {lastUser && (
+          <button
+            type="button"
+            onClick={handleAutoLogin}
+            style={{
+              background: colors.success,
+              color: colors.textLight,
+              border: "none",
+              borderRadius: 6,
+              padding: "10px 0",
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: autoLoginLoading ? "not-allowed" : "pointer",
+              marginBottom: 8,
+              transition: "background 0.2s"
+            }}
+            disabled={autoLoginLoading}
+          >
+            {autoLoginLoading ? tr.loggingin : `${tr.lastLogin}${lastUser.email}`}
+          </button>
+        )}
+        <div style={{ position: "relative", width: "100%" }}>
+          <input
+            type="email"
+            placeholder={tr.email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              boxSizing: "border-box",
+              padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: `1px solid ${colors.border}`,
+              outline: "none",
+              width: "100%",
+              direction: currentLang === "he" ? "rtl" : "ltr"
+            }}
+            autoComplete="username"
+            aria-label={tr.email}
+          />
+          <span
+            style={{
+              position: "absolute",
+              [currentLang === "he" ? "right" : "left"]: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: 22,
+              pointerEvents: "none"
+            }}
+          >
+            {"\u{1F4E7}"}
+          </span>
+        </div>
+        <div style={{ position: "relative", width: "100%" }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder={tr.password}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              boxSizing: "border-box",
+              padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: `1px solid ${colors.border}`,
+              outline: "none",
+              width: "100%",
+              direction: currentLang === "he" ? "rtl" : "ltr"
+            }}
+            autoComplete="current-password"
+            aria-label={tr.password}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            style={{
+              position: "absolute",
+              [currentLang === "he" ? "right" : "left"]: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 22
+            }}
+            tabIndex={-1}
+            aria-label={showPassword ? (currentLang === "he" ? "הסתר סיסמה" : "Hide password") : (currentLang === "he" ? "הצג סיסמה" : "Show password")}
+          >
+            {showPassword ? "\u{1F648}" : "\u{1F441}"}
+          </button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <input
+            type="checkbox"
+            id="remember"
+            checked={remember}
+            onChange={() => setRemember((v) => !v)}
+            style={{ accentColor: colors.primary }}
+          />
+          <label htmlFor="remember" style={{ fontSize: 14 }}>{tr.remember}</label>
+          <span style={{ flex: 1 }} />
+          <Link to="/reset" style={{ color: colors.secondary, fontSize: 14, textDecoration: "underline dotted", cursor: "pointer" }}>
+            {tr.forgot}
+          </Link>
+        </div>
+        {error && (
+          <div style={{ color: colors.error, fontSize: 15, textAlign: "center", marginTop: -8 }}>{error}</div>
+        )}
         <button
-          type="button"
-          onClick={handleAutoLogin}
+          type="submit"
           style={{
-            background: colors.success,
+            background: loading ? colors.border : colors.primary,
             color: colors.textLight,
             border: "none",
             borderRadius: 6,
-            padding: "10px 0",
-            fontSize: 16,
+            padding: "12px 0",
+            fontSize: 18,
             fontWeight: 600,
-            cursor: autoLoginLoading ? "not-allowed" : "pointer",
-            marginBottom: 8,
+            cursor: loading ? "not-allowed" : "pointer",
+            marginTop: 8,
             transition: "background 0.2s"
           }}
-          disabled={autoLoginLoading}
+          disabled={loading}
+          aria-busy={loading}
         >
-          {autoLoginLoading ? tr.loggingin : `${tr.lastLogin}${lastUser.email}`}
+          {loading ? tr.loggingin : tr.login}
         </button>
-      )}
-      <div style={{ position: "relative", width: "100%" }}>
-        <input
-          type="email"
-          placeholder={tr.email}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{
-            boxSizing: "border-box",
-            padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
-            fontSize: 16,
-            borderRadius: 6,
-            border: `1px solid ${colors.border}`,
-            outline: "none",
-            width: "100%",
-            direction: currentLang === "he" ? "rtl" : "ltr"
-          }}
-          autoComplete="username"
-          aria-label={tr.email}
-        />
-        <span
-          style={{
-            position: "absolute",
-            [currentLang === "he" ? "right" : "left"]: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: 22,
-            pointerEvents: "none"
-          }}
-        >
-          {"\u{1F4E7}"}
-        </span>
-      </div>
-      <div style={{ position: "relative", width: "100%" }}>
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder={tr.password}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{
-            boxSizing: "border-box",
-            padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
-            fontSize: 16,
-            borderRadius: 6,
-            border: `1px solid ${colors.border}`,
-            outline: "none",
-            width: "100%",
-            direction: currentLang === "he" ? "rtl" : "ltr"
-          }}
-          autoComplete="current-password"
-          aria-label={tr.password}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword((v) => !v)}
-          style={{
-            position: "absolute",
-            [currentLang === "he" ? "right" : "left"]: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: 22
-          }}
-          tabIndex={-1}
-          aria-label={showPassword ? (currentLang === "he" ? "הסתר סיסמה" : "Hide password") : (currentLang === "he" ? "הצג סיסמה" : "Show password")}
-        >
-          {showPassword ? "\u{1F648}" : "\u{1F441}"}
-        </button>
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <input
-          type="checkbox"
-          id="remember"
-          checked={remember}
-          onChange={() => setRemember((v) => !v)}
-          style={{ accentColor: colors.primary }}
-        />
-        <label htmlFor="remember" style={{ fontSize: 14 }}>{tr.remember}</label>
-        <span style={{ flex: 1 }} />
-        <Link to="/reset" style={{ color: colors.secondary, fontSize: 14, textDecoration: "underline dotted", cursor: "pointer" }}>
-          {tr.forgot}
-        </Link>
-      </div>
-      {error && (
-        <div style={{ color: colors.error, fontSize: 15, textAlign: "center", marginTop: -8 }}>{error}</div>
-      )}
-      <button
-        type="submit"
-        style={{
-          background: loading ? colors.border : colors.primary,
-          color: colors.textLight,
-          border: "none",
-          borderRadius: 6,
-          padding: "12px 0",
-          fontSize: 18,
-          fontWeight: 600,
-          cursor: loading ? "not-allowed" : "pointer",
-          marginTop: 8,
-          transition: "background 0.2s"
-        }}
-        disabled={loading}
-        aria-busy={loading}
-      >
-        {loading ? tr.loggingin : tr.login}
-      </button>
-      <div style={{ textAlign: "center", marginTop: 10 }}>
-        <span style={{ fontSize: 15 }}>{tr.noAccount}</span>
-        <Link
-          to="/signup"
-          style={{
-            color: colors.primary,
-            fontWeight: 700,
-            textDecoration: "none",
-            borderBottom: `2px solid ${colors.primary}`,
-            paddingBottom: 2,
-            transition: "color 0.2s"
-          }}
-        >
-          {tr.toSignup}
-        </Link>
-      </div>
-    </form>
+        <div style={{ textAlign: "center", marginTop: 10 }}>
+          <span style={{ fontSize: 15 }}>{tr.noAccount}</span>
+          <Link
+            to="/signup"
+            style={{
+              color: colors.primary,
+              fontWeight: 700,
+              textDecoration: "none",
+              borderBottom: `2px solid ${colors.primary}`,
+              paddingBottom: 2,
+              transition: "color 0.2s"
+            }}
+          >
+            {tr.toSignup}
+          </Link>
+        </div>
+      </form>
+    </div>
   );
 }

@@ -69,92 +69,94 @@ export default function ResetPassword({ lang = "he" }) {
   };
 
   return (
-    <form onSubmit={handleReset} style={{
-      maxWidth: 350,
-      margin: "60px auto",
-      padding: 32,
-      background: colors.surface,
-      borderRadius: 12,
-      boxShadow: "0 2px 12px 0 #0002",
-      display: "flex",
-      flexDirection: "column",
-      gap: 16,
-      border: `1px solid ${colors.border}`
-    }}>
-      <button type="button" onClick={handleSwitchLang} style={{ alignSelf: "flex-end", background: "none", border: "none", color: colors.secondary, fontWeight: 700, cursor: "pointer", fontSize: 15 }}>{tr.switchLang}</button>
-      <h2 style={{ color: colors.primary, textAlign: "center", marginBottom: 12 }}>{tr.title}</h2>
-      <div style={{ position: "relative", width: "100%" }}>
-        <input
-          type="email"
-          placeholder={tr.email}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+    <div className="page-container">
+      <form onSubmit={handleReset} style={{
+        maxWidth: 350,
+        margin: "60px auto",
+        padding: 32,
+        background: colors.surface,
+        borderRadius: 12,
+        boxShadow: "0 2px 12px 0 #0002",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        border: `1px solid ${colors.border}`
+      }}>
+        <button type="button" onClick={handleSwitchLang} style={{ alignSelf: "flex-end", background: "none", border: "none", color: colors.secondary, fontWeight: 700, cursor: "pointer", fontSize: 15 }}>{tr.switchLang}</button>
+        <h2 style={{ color: colors.primary, textAlign: "center", marginBottom: 12 }}>{tr.title}</h2>
+        <div style={{ position: "relative", width: "100%" }}>
+          <input
+            type="email"
+            placeholder={tr.email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              boxSizing: "border-box",
+              padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
+              fontSize: 16,
+              borderRadius: 6,
+              border: `1px solid ${colors.border}`,
+              outline: "none",
+              width: "100%",
+              direction: currentLang === "he" ? "rtl" : "ltr"
+            }}
+            autoComplete="username"
+            aria-label={tr.email}
+          />
+          <span
+            style={{
+              position: "absolute",
+              [currentLang === "he" ? "right" : "left"]: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: 22,
+              pointerEvents: "none"
+            }}
+          >
+            {"\u{1F4E7}"}
+          </span>
+        </div>
+        {error && (
+          <div style={{ color: colors.error, fontSize: 15, textAlign: "center", marginTop: -8 }}>{error}</div>
+        )}
+        {sent && (
+          <div style={{ color: colors.success, fontSize: 15, textAlign: "center", marginTop: -8 }}>{tr.sent}</div>
+        )}
+        <button
+          type="submit"
           style={{
-            boxSizing: "border-box",
-            padding: currentLang === "he" ? "10px 44px 10px 10px" : "10px 10px 10px 44px",
-            fontSize: 16,
+            background: loading ? colors.border : colors.primary,
+            color: colors.textLight,
+            border: "none",
             borderRadius: 6,
-            border: `1px solid ${colors.border}`,
-            outline: "none",
-            width: "100%",
-            direction: currentLang === "he" ? "rtl" : "ltr"
+            padding: "12px 0",
+            fontSize: 18,
+            fontWeight: 600,
+            cursor: loading ? "not-allowed" : "pointer",
+            marginTop: 8,
+            transition: "background 0.2s"
           }}
-          autoComplete="username"
-          aria-label={tr.email}
-        />
-        <span
-          style={{
-            position: "absolute",
-            [currentLang === "he" ? "right" : "left"]: 8,
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: 22,
-            pointerEvents: "none"
-          }}
+          disabled={loading}
+          aria-busy={loading}
         >
-          {"\u{1F4E7}"}
-        </span>
-      </div>
-      {error && (
-        <div style={{ color: colors.error, fontSize: 15, textAlign: "center", marginTop: -8 }}>{error}</div>
-      )}
-      {sent && (
-        <div style={{ color: colors.success, fontSize: 15, textAlign: "center", marginTop: -8 }}>{tr.sent}</div>
-      )}
-      <button
-        type="submit"
-        style={{
-          background: loading ? colors.border : colors.primary,
-          color: colors.textLight,
-          border: "none",
-          borderRadius: 6,
-          padding: "12px 0",
-          fontSize: 18,
-          fontWeight: 600,
-          cursor: loading ? "not-allowed" : "pointer",
-          marginTop: 8,
-          transition: "background 0.2s"
-        }}
-        disabled={loading}
-        aria-busy={loading}
-      >
-        {loading ? tr.sending : tr.send}
-      </button>
-      <div style={{ textAlign: "center", marginTop: 10 }}>
-        <Link
-          to="/"
-          style={{
-            color: colors.primary,
-            fontWeight: 700,
-            textDecoration: "none",
-            borderBottom: `2px solid ${colors.primary}`,
-            paddingBottom: 2,
-            transition: "color 0.2s"
-          }}
-        >
-          {tr.back}
-        </Link>
-      </div>
-    </form>
+          {loading ? tr.sending : tr.send}
+        </button>
+        <div style={{ textAlign: "center", marginTop: 10 }}>
+          <Link
+            to="/"
+            style={{
+              color: colors.primary,
+              fontWeight: 700,
+              textDecoration: "none",
+              borderBottom: `2px solid ${colors.primary}`,
+              paddingBottom: 2,
+              transition: "color 0.2s"
+            }}
+          >
+            {tr.back}
+          </Link>
+        </div>
+      </form>
+    </div>
   );
 }
