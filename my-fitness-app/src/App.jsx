@@ -28,17 +28,21 @@ export default function App() {
   if (isAuth === false && !["/", "/signup", "/reset"].includes(location.pathname)) {
     return <Navigate to="/" replace />;
   }
+  // דפים שדורשים טופס בלבד
+  const isFormPage = ["/", "/signup", "/reset"].includes(location.pathname);
   return (
     <>
       <Navbar lang={lang} setLang={setLang} />
-      <Routes>
-        <Route path="/" element={<Login lang={lang} />} />
-        <Route path="/signup" element={<Signup lang={lang} />} />
-        <Route path="/create" element={isAuth ? <CreateWorkout lang={lang} /> : <Navigate to="/" replace />} />
-        <Route path="/run" element={isAuth ? <RunWorkout lang={lang} /> : <Navigate to="/" replace />} />
-        <Route path="/reset" element={<ResetPassword lang={lang} />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <div className={isFormPage ? "page-container" : "page-full"}>
+        <Routes>
+          <Route path="/" element={<Login lang={lang} />} />
+          <Route path="/signup" element={<Signup lang={lang} />} />
+          <Route path="/create" element={isAuth ? <CreateWorkout lang={lang} /> : <Navigate to="/" replace />} />
+          <Route path="/run" element={isAuth ? <RunWorkout lang={lang} /> : <Navigate to="/" replace />} />
+          <Route path="/reset" element={<ResetPassword lang={lang} />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
     </>
   );
 }

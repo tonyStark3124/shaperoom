@@ -52,6 +52,26 @@ body, #root {
   animation: page-slide-in 0.7s cubic-bezier(.4,0,.2,1);
   background: linear-gradient(120deg, #0a1626 60%, #16213a 100%);
   backdrop-filter: blur(2.5px) saturate(1.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* רקע דינמי מסביב לטפסים */
+.page-container::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -20%;
+  left: -20%;
+  width: 140vw;
+  height: 140vh;
+  background: radial-gradient(circle at 70% 30%, #3b82f6cc 0%, #06d6a088 40%, transparent 80%),
+              radial-gradient(circle at 20% 80%, #fbbf2444 0%, transparent 60%),
+              linear-gradient(120deg, #0a1626 60%, #16213a 100%);
+  filter: blur(32px) saturate(1.2);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: opacity 0.5s;
 }
 
 .card, .form-card {
@@ -136,4 +156,37 @@ button:hover, button:focus {
 @keyframes page-slide-in {
   from { opacity: 0; transform: translateY(40px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* דפים פרוסים (לא לוגין/סיגנאפ) */
+.page-full {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  min-height: 100vh;
+  width: 100vw;
+  padding: 0;
+  animation: page-slide-in 0.7s cubic-bezier(.4,0,.2,1);
+  background: linear-gradient(120deg, #16213a 60%, #3b82f6 100%);
+  backdrop-filter: blur(2.5px) saturate(1.2);
+  position: relative;
+  overflow: hidden;
+}
+.page-full::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -20%;
+  left: -20%;
+  width: 140vw;
+  height: 140vh;
+  background: radial-gradient(circle at 80% 20%, #06d6a0cc 0%, transparent 60%),
+              radial-gradient(circle at 10% 90%, #fbbf2444 0%, transparent 60%),
+              linear-gradient(120deg, #16213a 60%, #3b82f6 100%);
+  filter: blur(32px) saturate(1.2);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: opacity 0.5s;
 }
