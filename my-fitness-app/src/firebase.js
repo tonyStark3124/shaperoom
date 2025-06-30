@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDZ6WZaErINqWKHUMBTBcaLHZWf8HbsQTg",
-  authDomain: "shaperoom-f06b1.firebaseapp.com",
-  projectId: "shaperoom-f06b1",
-  storageBucket: "shaperoom-f06b1.firebasestorage.app",
-  messagingSenderId: "355094017773",
-  appId: "1:355094017773:web:e76a73757801801ef73ee4",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 };
 
 // הפעלת האפליקציה
